@@ -6,6 +6,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const auth = require('./api/auth');
+const router = express.Router();
 
 const app = express();
 app.use(cors());
@@ -45,6 +46,9 @@ const Connection = async () => {
 Connection();
 
 app.use('/', auth);
+router.get('/', async(req, res) => {
+    res.json({message: "root route"});
+});
 
 const port = process.env.PORT || 4000;
 
