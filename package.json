@@ -4,9 +4,7 @@
   "description": "This is the server side of time bank.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node src/index.js",
-    "start": "node src/index.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "DevRyth",
   "license": "ISC",
