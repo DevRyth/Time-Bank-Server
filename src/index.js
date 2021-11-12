@@ -1,6 +1,6 @@
-// if(process.env.NODE_ENV !== "production") {
-//     require('dotenv').config();
-// }
+if(process.env.NODE_ENV !== "production") {
+    require('dotenv').config();
+}
 
 const express = require('express');
 const cors = require('cors');
@@ -46,7 +46,7 @@ Connection();
 
 app.use('/', auth);
 
-const port = 4000;
+const port = process.env.PORT || 4000;
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);
