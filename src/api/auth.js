@@ -28,7 +28,7 @@ router.post("/register", async (req, res) => {
     res.status(500).json({ error: "Cannot register user at the moment!" });
   });
 
-  if (savedUser) res.json({ message: "Thanks for registering" });
+  if (savedUser) res.json({ message: "User Registered!!" });
 });
 
 router.post("/login", async (req, res) => {
