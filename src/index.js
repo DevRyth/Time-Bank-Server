@@ -5,7 +5,8 @@ if(process.env.NODE_ENV !== "production") {
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const auth = require('./api/auth');
+const authRoutes = require('./api/auth');
+const userRoutes = require('./api/user');
 
 const app = express();
 app.use(cors());
@@ -32,7 +33,7 @@ app.use(express.json());
 // });
 
 const Connection = async () => {
-    const db_url = "mongodb+srv://dba:DevRyth@timebank.kny3u.mongodb.net/TimeBank?retryWrites=true&w=majority";
+    const db_url = "mongodb://localhost:27017/time-bank";
     try {
         await mongoose.connect(db_url, {useNewUrlParser: true, useUnifiedTopology: true});
         console.log("Database Connected Successfully");
@@ -44,7 +45,8 @@ const Connection = async () => {
 
 Connection();
 
-app.use('/', auth);
+app.use('/', authRoutes);
+app.use('/', userRoutes);
 app.get('/', (req, res) => {
     res.json({message: "root route"});
 })

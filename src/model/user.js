@@ -15,7 +15,43 @@ const UserSchema = new Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+    },
+    first_name: {
+        type: String,
+    },
+    middle_name: {
+        type: String,
+    },
+    last_name: {
+        type: String,
+    },
+    gender: {
+        type: String,
+    },
+    birth_date: {
+        type: Number,
+    },
+    birth_month: {
+        type: Number,
+    },
+    birth_year: {
+        type: Number,
+    },
+    address: {
+        type: String,
+    },
+    district: {
+        type: String,
+    },
+    state: {
+        type: String,
+    },
+    pincode: {
+        type: Number,
+    },
+    phone_no: {
+        type: String,
     }
 });
 
