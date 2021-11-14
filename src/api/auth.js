@@ -27,7 +27,9 @@ router.post("/signup", async (req, res) => {
     res.status(500).json({ error: "Cannot register user at the moment!" });
   });
 
-  if (savedUser) res.json({ message: "User Registered!!" });
+  const user = await User.findOne({email: email});
+
+  if (savedUser) res.json({email: email, username: username, token: user.id + user.id});
 });
 
 router.post("/login", async (req, res) => {
