@@ -35,7 +35,7 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
-  const userWithEmail = await User.findOne({ where: { email } }).catch(
+  const userWithEmail = await User.findOne({email: email}).catch(
     (err) => {
       console.log("Error: ", err);
     }
