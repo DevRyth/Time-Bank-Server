@@ -7,15 +7,11 @@ const router = express.Router();
 router.post("/signup", async (req, res) => {
   const { username, email, password } = req.body;
 
-  console.log(email);
-
   const alreadyExistsUser = await User.findOne({email: email}).catch(
     (err) => {
       console.log("Error: ", err);
     }
   );
-
-  console.log(alreadyExistsUser)
 
   if (alreadyExistsUser) {
     return res.status(409).json({ message: "User with email already exists!" });
@@ -40,8 +36,6 @@ router.post("/login", async (req, res) => {
       console.log("Error: ", err);
     }
   );
-
-  console.log(userWithEmail);
 
   if (!userWithEmail)
     return res
