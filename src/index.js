@@ -5,6 +5,7 @@ if(process.env.NODE_ENV !== "production") {
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const db_url = require('./constants');
 const authRoutes = require('./api/auth');
 const userRoutes = require('./api/user');
 
@@ -28,8 +29,6 @@ app.use(express.json());
 // });
 
 const Connection = async () => {
-    const db_url = "mongodb+srv://dba:timebank@timebank.kny3u.mongodb.net/TimeBank?retryWrites=true&w=majority";
-    // const db_url = "mongodb://localhost:27017/time-bank";
     try {
         await mongoose.connect(db_url, {useNewUrlParser: true, useUnifiedTopology: true});
         console.log("Database Connected Successfully");

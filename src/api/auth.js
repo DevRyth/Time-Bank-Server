@@ -55,7 +55,7 @@ router.post("/login", async (req, res) => {
 
   // console.log(jwtToken);
 
-  res.json({ message: "Welcome Back!", token: userWithEmail.id + userWithEmail.id });
+  res.json({ userWithEmail, token: userWithEmail.id + userWithEmail.id });
 });
 
 

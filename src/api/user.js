@@ -5,7 +5,7 @@ const UserInfo = require('../model/userInfo');
 const router = express.Router();
 
 router.post('/register', async (req, res) => {
-    const userId = req.body.token.slice(0, Math.ceil(req.body.token.length / 2));
+    const userId = req.headers.authorization.slice(0, Math.ceil(req.headers.authorization.length / 2));
     const user = req.body.user;
     const existingUser = await User.findOne({id: userId}).catch((err) => {
         console.log("Error: ", err);
