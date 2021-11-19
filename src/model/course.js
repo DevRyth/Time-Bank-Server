@@ -20,10 +20,5 @@ const courseSchema=new Schema({
     available:{
         type:boolean
     },
-    duration:
-    {
-        type: Schema.Types.ObjectId,
-        ref:Duration
-
-    }
+    
 });
