@@ -17,8 +17,17 @@ const courseSchema=new Schema({
         type:String,
         required:true
     },
+
     available:{
         type:boolean
     },
-    
+    duration:
+    {
+
+        type: Schema.Types.ObjectId,
+        ref:Duration
+
+    }
 });
+
+module.exports = mongoose.model('Course', courseSchema);
