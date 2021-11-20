@@ -6,11 +6,11 @@ const durationSchema  = new Schema({
         type:String,
         required:true
     },
-    end:
+    duration:
     {
         type:String,
         required:true
-    }
+    } 
 });
 
 module.exports = mongoose.model('Duration', durationSchema);
