@@ -17,12 +17,12 @@ const courseSchema = new Schema({
 
   schedule: [
     {
-      duration: {
+      appointment: {
         type: Schema.Types.ObjectId,
-        ref: Duration,
+        ref: "Appointment",
       },
       availablity: {
-        type: boolean,
+        type: Boolean,
       },
     },
   ],

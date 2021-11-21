@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const db_url = require('./constants');
 const authRoutes = require('./api/auth');
 const userRoutes = require('./api/user');
+const courseRoutes = require('./api/course');
 
 const app = express();
 app.use(cors());
@@ -42,6 +43,7 @@ Connection();
 
 app.use('/', authRoutes);
 app.use('/', userRoutes);
+app.use('/', courseRoutes);
 app.get('/', (req, res) => {
     res.json({message: "root route"});
 })
