@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const autoIncrement = require('mongoose-auto-increment');
 const Schema = mongoose.Schema;
 
 const courseSchema = new Schema({
@@ -17,15 +18,22 @@ const courseSchema = new Schema({
 
   schedule: [
     {
-      appointment: {
-        type: Schema.Types.ObjectId,
-        ref: "Appointment",
+      appointmentId: {
+        type: Number,
       },
       availablity: {
         type: Boolean,
       },
     },
   ],
+});
+
+autoIncrement.initialize(mongoose.connection);
+courseSchema.plugin(autoIncrement.plugin, {
+  model: 'Course',
+  field: 'course_id',
+  startAt: 1,
+  incrementBy: 1
 });
 
 module.exports = mongoose.model("Course", courseSchema);
