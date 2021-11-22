@@ -8,6 +8,8 @@ const mongoose = require('mongoose');
 const db_url = require('./constants');
 const authRoutes = require('./api/auth');
 const userRoutes = require('./api/user');
+const courseRoutes = require('./api/course');
+const autoIncrement = require('mongoose-auto-increment');
 
 const app = express();
 app.use(cors());
@@ -15,22 +17,10 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// mongoose.connect(db_url, {
-//     useNewUrlParser: true,
-//     // useCreateIndex: false,
-//     useUnifiedTopology: true,
-//     // useFindAndModify: false,
-// })
-
-// const db = mongoose.connection;
-// db.on("error", console.error.bind(console, "connection error:"));
-// db.once("open", () => {
-//     console.log("Database connected");
-// });
-
 const Connection = async () => {
     try {
-        await mongoose.connect(db_url, {useNewUrlParser: true, useUnifiedTopology: true});
+        const connection = await mongoose.connect(db_url, {useNewUrlParser: true, useUnifiedTopology: true});
+        autoIncrement.initialize(connection);
         console.log("Database Connected Successfully");
     }
     catch(err) {
@@ -42,6 +32,7 @@ Connection();
 
 app.use('/', authRoutes);
 app.use('/', userRoutes);
+app.use('/', courseRoutes);
 app.get('/', (req, res) => {
     res.json({message: "root route"});
 })
