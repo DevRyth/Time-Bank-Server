@@ -1,5 +1,6 @@
 const express = require("express");
 const User = require("../model/user");
+const UserInfo = require("../model/userInfo");
 // const jwt = require("jsonwebtoken");
 
 const router = express.Router();
@@ -56,6 +57,17 @@ router.post("/login", async (req, res) => {
   // console.log(jwtToken);
 
   res.json({ userWithEmail, token: userWithEmail.id + userWithEmail.id });
+});
+
+router.get("/me", async (req, res) =>{
+  const token=req.headers.authorization.slice(0, req.headers.authorization.length / 2);
+  const user = await User.findOne({id: token}, async (err, me) => {
+    if(err) return res.status(404).json("Invalid token!!");
+    const userInfo = await UserInfo.findOne({userinfo_id: me.user_info}, (err, userInfo) => {
+      if(err) return res.status(404).json(err);
+      return res.status(200).json({me: me, userInfo: userInfo});
+    })
+  });
 });
 
 
