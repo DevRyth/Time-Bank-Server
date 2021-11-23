@@ -16,10 +16,10 @@ router.post('/register', async (req, res) => {
         if(err) res.status(500).json({error: "Cannot save user info at the moment!", err});
         existingUser.user_info = u.userinfo_id;
         existingUser.save();
-        res.redirect('/me');
+        res.status(200).json({user: existingUser, userInfo: u});
     });
 
-    if(savedUserInfo) res.status(200).json({...user, email: existingUser.email, username: existingUser.username});
+    // if(savedUserInfo) res.status(200).json({...user, email: existingUser.email, username: existingUser.username});
 });
 
 module.exports = router;
