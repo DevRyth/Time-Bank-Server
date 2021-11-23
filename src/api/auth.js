@@ -65,7 +65,7 @@ router.get("/me", async (req, res) =>{
     if(err) return res.status(404).json("Invalid token!!");
     const userInfo = await UserInfo.findOne({userinfo_id: me.user_info}, (err, userInfo) => {
       if(err) return res.status(404).json(err);
-      return res.status(200).json(me);
+      return res.status(200).json({me: me, userInfo: userInfo});
     })
   });
 });
