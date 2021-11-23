@@ -21,7 +21,7 @@ router.post("/signup", async (req, res) => {
   const newUser = new User({ username, email, password });
   const savedUser = await newUser.save().catch((err) => {
     console.log("Error: ", err);
-    res.status(500).json({ error: "Cannot register user at the moment!" });
+    res.status(500).json({ error: err });
   });
 
   const user = await User.findOne({email: email});
