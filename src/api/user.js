@@ -12,13 +12,11 @@ router.post('/register', async (req, res) => {
     });
     if(!existingUser) return res.status(409).json({message: "Token invalid"});
     const userInfo = new UserInfo(user);
-    console.log(userInfo);
     const savedUserInfo = await userInfo.save((err, u) => {
         if(err) res.status(500).json({error: "Cannot save user info at the moment!", err});
-        console.log(u);
         existingUser.user_info = u.userinfo_id;
         existingUser.save();
-        return res.status(200).json("successful");
+        res.redirect('/me');
     });
 
     if(savedUserInfo) res.status(200).json({...user, email: existingUser.email, username: existingUser.username});
