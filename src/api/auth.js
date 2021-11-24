@@ -62,7 +62,7 @@ router.post("/login", async (req, res) => {
 
   // console.log(jwtToken);
 
-  res.json({ userWithEmail, token: userWithEmail.id + userWithEmail.id });
+  res.json({ user: userWithEmail, token: userWithEmail.id + userWithEmail.id });
 });
 
 router.get("/me", async (req, res) =>{
