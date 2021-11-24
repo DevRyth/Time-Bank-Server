@@ -1,6 +1,7 @@
 const express = require("express");
 const User = require("../model/user");
 const UserInfo = require("../model/userInfo");
+const TimeBank = require("../model/timebank");
 // const jwt = require("jsonwebtoken");
 
 const router = express.Router();
@@ -18,7 +19,11 @@ router.post("/signup", async (req, res) => {
     return res.status(409).json({ message: "User with email already exists!" });
   }
 
-  const newUser = new User({ username, email, password });
+  const tb = new TimeBank();
+  const timebank = await tb.save();
+  const time_bank =  timebank.timebank_id;
+
+  const newUser = new User({ username, email, password, time_bank });
   const savedUser = await newUser.save().catch((err) => {
     console.log("Error: ", err);
     res.status(500).json({ error: err });

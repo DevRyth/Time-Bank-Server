@@ -21,6 +21,9 @@ const UserSchema = new Schema({
     user_info: {
         type: Number,
     },
+    time_bank: {
+        type: Number,
+    },
     courses: {
         type: Array
     }
