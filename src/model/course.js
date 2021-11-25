@@ -16,6 +16,11 @@ const courseSchema = new Schema({
     required: true,
   },
 
+  user_id: {
+    type: Number,
+    required: true,
+  },
+
   schedule: [
     {
       appointmentId: {

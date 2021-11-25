@@ -9,6 +9,7 @@ const db_url = require('./constants');
 const authRoutes = require('./api/auth');
 const userRoutes = require('./api/user');
 const courseRoutes = require('./api/course');
+const timebankRoutes = require('./api/timebank');
 const autoIncrement = require('mongoose-auto-increment');
 
 const app = express();
@@ -33,6 +34,7 @@ Connection();
 app.use('/', authRoutes);
 app.use('/', userRoutes);
 app.use('/', courseRoutes);
+app.use('/', timebankRoutes);
 app.get('/', (req, res) => {
     res.json({message: "root route"});
 })
