@@ -60,7 +60,7 @@ router.post("/login", async (req, res) => {
   //   process.env.JWT_SECRET
   // );
 
-  // console.log(jwtToken);
+  // console.log(jwtToken)
 
   res.json({ user: userWithEmail, token: userWithEmail.id + userWithEmail.id });
 });
