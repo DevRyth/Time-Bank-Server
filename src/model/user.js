@@ -19,13 +19,15 @@ const UserSchema = new Schema({
         required: true,
     },
     user_info: {
-        type: Number,
+        type: Schema.Types.ObjectId,
+        ref: "UserInfo"
     },
     time_bank: {
-        type: Number,
+        type: Schema.Types.ObjectId,
+        ref: "TimeBank"
     },
     courses: {
-        type: Array
+        type: Array,
     }
 });
 

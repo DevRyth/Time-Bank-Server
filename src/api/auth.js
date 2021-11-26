@@ -22,7 +22,7 @@ router.post("/signup", async (req, res) => {
 
   const tb = new TimeBank();
   const timebank = await tb.save();
-  const time_bank =  timebank.timebank_id;
+  const time_bank =  timebank._id;
 
   const newUser = new User({ username, email, password, time_bank });
   const savedUser = await newUser.save().catch((err) => {
@@ -67,12 +67,15 @@ router.post("/login", async (req, res) => {
 
 router.get("/me", async (req, res) =>{
   const token=req.headers.authorization.slice(0, req.headers.authorization.length / 2);
-  const user = await User.findOne({id: token}, async (err, me) => {
-    if(err) return res.status(404).json("Invalid token!!");
-    const userInfo = await UserInfo.findOne({userinfo_id: me.user_info}, (err, userInfo) => {
-      if(err) return res.status(404).json(err);
-      return res.status(200).json({user: me, userInfo: userInfo});
-    })
+  // const user = await User.findOne({id: token}, async (err, me) => {
+  //   if(err) return res.status(404).json("Invalid token!!");
+  //   const userInfo = await UserInfo.findOne({userinfo_id: me.user_info}, (err, userInfo) => {
+  //     if(err) return res.status(404).json(err);
+  //     return res.status(200).json({user: me, userInfo: userInfo});
+  //   })
+  // });
+  const u = await User.findOne({id:token}).populate(["user_info", "time_bank"]).then((user) => {
+    return res.status(200).json(user);
   });
 });
 
