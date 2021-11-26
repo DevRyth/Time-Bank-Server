@@ -9,7 +9,7 @@ router.post('/register', async (req, res) => {
     
     const userinfo = req.body.user;
     
-    const existingUser = await User.findOne({id: userId}).catch((err) => {
+    const existingUser = await User.findOne({_id: userId}).catch((err) => {
         return res.status(404).json("Invalid Token!!");
     });
 
@@ -21,7 +21,7 @@ router.post('/register', async (req, res) => {
         if(err) res.status(500).json({error: "Cannot save user info at the moment!", err});
         existingUser.user_info = u._id;
         await existingUser.save();
-        const savedUser = await User.findOne({id: userId}).populate(["user_info", "time_bank"]).then((u) => {
+        const savedUser = await User.findOne({_id: userId}).populate(["user_info", "time_bank"]).then((u) => {
             return res.status(200).json(u);
         })
         // res.status(200).json({user: existingUser, userInfo: u});

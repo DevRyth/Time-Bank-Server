@@ -74,7 +74,7 @@ router.get("/me", async (req, res) =>{
   //     return res.status(200).json({user: me, userInfo: userInfo});
   //   })
   // });
-  const u = await User.findOne({id:token}).populate(["user_info", "time_bank"]).then((user) => {
+  const u = await User.findOne({_id:token}).populate(["user_info", "time_bank"]).then((user) => {
     return res.status(200).json(user);
   });
 });
