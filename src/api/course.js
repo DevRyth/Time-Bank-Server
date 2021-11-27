@@ -22,13 +22,13 @@ router.post("/course-register", async (req, res) => {
         if (!existAppointment) {
             const appointment = new Appointment(d);
             const newDuration = await appointment.save().then(() => {
-                c.schedule[i].appointmentId = appointment._id;
+                c.schedule[i].appointment = appointment._id;
             }).catch(err => {
                 return res.status(400).send(err);
             });
         }
         else {
-            c.schedule[i].appointmentId = existAppointment._id;
+            c.schedule[i].appointment = existAppointment._id;
         }
     }
 
@@ -78,7 +78,7 @@ router.get("/creator-course", async (req, res) => {
 router.get("/course", async (req, res) => {
     const courseId = req.query.course_id;
 
-    await Course.findOne({course_id: courseId}).populate("creator").then((course) => {
+    await Course.findOne({course_id: courseId}).populate("creator schedule.appointment").then((course) => {
         return res.status(200).json(course);
     });
 });
