@@ -54,11 +54,25 @@ router.get("/my-course", async (req, res) => {
         return res.status(404).json("Invalid Token!!");
     });
 
-    const myCourses = await Course.find({user_id: user.user_id}, (err, courses) => {
+    await Course.find({user_id: user.user_id}, (err, courses) => {
         if(err) return res.status(404).json(err);
         return res.status(200).json(courses);
     })
 
+});
+
+router.get("/all-courses", async (req, res) => {
+    const offset = req.query.offset ? req.query.offset : 1;
+    const limit = req.query.limit ? req.query.limit : 20;
+
+    await Course.find({}).populate({path: "creator", select: "email username user_id user_info", populate: {
+        path: "user_info",
+        model: "UserInfo",
+    }}).populate("schedule.appointment").then((courses) => {
+        const start = limit * (offset - 1);
+        const end = parseInt(limit * (offset - 1)) + parseInt(limit);
+        return res.status(200).json(courses.slice(start, end));
+    })
 });
 
 router.get("/creator-course", async (req, res) => {
