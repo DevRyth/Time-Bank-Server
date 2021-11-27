@@ -11,20 +11,26 @@ const courseSchema = new Schema({
     type: String,
     required: true,
   },
+  description: {
+    type: String,
+    required: true
+  },
   difficulty: {
     type: String,
     required: true,
   },
 
   user_id: {
-    type: Number,
+    type: Schema.Types.ObjectId,
+    ref: "User",
     required: true,
   },
 
   schedule: [
     {
       appointmentId: {
-        type: Number,
+        type: Schema.Types.ObjectId,
+        ref: "Appointment"
       },
       availablity: {
         type: Boolean,

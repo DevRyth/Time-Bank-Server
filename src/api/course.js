@@ -21,26 +21,31 @@ router.post("/course-register", async (req, res) => {
         const existAppointment = await Appointment.findOne({ start: d.start, duration: d.duration, day: d.day });
         if (!existAppointment) {
             const appointment = new Appointment(d);
-            console.log(appointment);
             const newDuration = await appointment.save().then(() => {
-                c.schedule[i].appointmentId = appointment.appointment_id;
+                c.schedule[i].appointmentId = appointment._id;
             }).catch(err => {
                 return res.status(400).send(err);
             });
         }
         else {
-            c.schedule[i].appointmentId = existAppointment.appointment_id;
+            c.schedule[i].appointmentId = existAppointment._id;
         }
     }
 
-    const newCourse = new Course({...c, user_id: user.user_id});
-    await newCourse.save((err, course) => {
+    const newCourse = new Course({...c, user_id: user._id});
+    await newCourse.save(async (err, course) => {
         if(err) res.status(400).json(err);
         // console.log(course);
-        user.courses.push(course.course_id);
-        user.save();
-        return res.status(200).json(user);
+        user.courses.push(course._id);
+        await user.save();
     });
+
+    await User.findOne({_id: user}).populate({path: "courses", populate: {
+        path: "schedule.appointmentId",
+        model: "Appointment"
+    }}).then((u) => {
+        return res.status(200).json({courses: u.courses});
+    })
 });
 
 router.get("/my-course", async (req, res) => {

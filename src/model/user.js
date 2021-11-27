@@ -26,9 +26,12 @@ const UserSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "TimeBank"
     },
-    courses: {
-        type: Array,
-    }
+    courses: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "Course"
+        }
+    ]
 });
 
 UserSchema.plugin(passportLocalMongoose);
