@@ -41,7 +41,7 @@ router.post("/course-register", async (req, res) => {
             path: "schedule.appointment",
             model: "Appointment"
         }}).then((u) => {
-            return res.status(200).json({courses: u.courses});
+            return res.status(200).json({courses: u.courses, creator_id: u.user_id});
         });
     });
 });
@@ -64,21 +64,24 @@ router.get("/my-course", async (req, res) => {
 router.get("/creator-course", async (req, res) => {
     const userId = req.query.user_id;
 
-    const user = await User.findOne({user_id: userId}).catch((err) => {
-        return res.status(404).json("Invalid Token!!");
-    });
-    
-    const userCourses = await Course.find({user_id: user.user_id}, (err, courses) => {
-        if(err) return res.status(404).json(err);
-        return res.status(200).json(courses);
-    })
+    console.log(userId);
 
+    await User.findOne({user_id: userId}).then(async (user) => {
+        await Course.find({creator: user._id}).populate("schedule.appointment").then((courses) => {
+            return res.status(200).json(courses);
+        })
+    }).catch((err) => {
+        return res.status(404).json(err);
+    });
 });
 
 router.get("/course", async (req, res) => {
     const courseId = req.query.course_id;
 
-    await Course.findOne({course_id: courseId}).populate("creator schedule.appointment").then((course) => {
+    await Course.findOne({course_id: courseId}).populate({path: "creator", populate: {
+        path: "user_info",
+        model: "UserInfo"
+    }}).populate("schedule.appointment").then((course) => {
         return res.status(200).json(course);
     });
 });
