@@ -20,7 +20,7 @@ const courseSchema = new Schema({
     required: true,
   },
 
-  user_id: {
+  creator: {
     type: Schema.Types.ObjectId,
     ref: "User",
     required: true,
@@ -28,7 +28,7 @@ const courseSchema = new Schema({
 
   schedule: [
     {
-      appointmentId: {
+      appointment: {
         type: Schema.Types.ObjectId,
         ref: "Appointment"
       },

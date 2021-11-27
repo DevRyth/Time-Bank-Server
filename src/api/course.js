@@ -32,20 +32,18 @@ router.post("/course-register", async (req, res) => {
         }
     }
 
-    const newCourse = new Course({...c, user_id: user._id});
+    const newCourse = new Course({...c, creator: user._id});
     await newCourse.save(async (err, course) => {
         if(err) res.status(400).json(err);
-        // console.log(course);
         user.courses.push(course._id);
         await user.save();
+        await User.findOne({_id: user}).populate({path: "courses", populate: {
+            path: "schedule.appointment",
+            model: "Appointment"
+        }}).then((u) => {
+            return res.status(200).json({courses: u.courses});
+        });
     });
-
-    await User.findOne({_id: user}).populate({path: "courses", populate: {
-        path: "schedule.appointmentId",
-        model: "Appointment"
-    }}).then((u) => {
-        return res.status(200).json({courses: u.courses});
-    })
 });
 
 router.get("/my-course", async (req, res) => {
@@ -80,14 +78,8 @@ router.get("/creator-course", async (req, res) => {
 router.get("/course", async (req, res) => {
     const courseId = req.query.course_id;
 
-    const course = await Course.findOne({course_id: courseId}).then(async (c) => {
-        const user = await User.findOne({user_id: c.user_id}).then((u) => {
-            return res.status(200).json({course: c, user: u});
-        }).catch((err) => {
-            return res.status(404).json(err);
-        });
-    }).catch((err) => {
-        return res.status(404).json(err);
+    await Course.findOne({course_id: courseId}).populate("creator").then((course) => {
+        return res.status(200).json(course);
     });
 });
 
