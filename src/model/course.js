@@ -34,6 +34,7 @@ const courseSchema = new Schema({
       },
       availablity: {
         type: Boolean,
+        default: true
       },
     },
   ],
