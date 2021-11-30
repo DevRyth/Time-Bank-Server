@@ -138,4 +138,12 @@ router.get("/my-enroll", async (req, res) => {
     return res.status(200).json(user.enrolled);
 });
 
+// router.get("/search-course", async (req, res) => {
+//     const search_query = req.query.search_query;
+//     const offset = req.query.offset ? req.query.offset : 1;
+//     const limit = req.query.limit ? req.query.limit : 20;
+
+//     await Course.findOne({})
+// })
+
 module.exports = router;
