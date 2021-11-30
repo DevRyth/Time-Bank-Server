@@ -149,7 +149,7 @@ router.post("/enroll-course", async (req, res) => {
     await user.save();
     await course.save();
 
-    res.status(200).json({ course: course, appointment_id: appointment_id });
+    res.status(200).json({course_id: course_id, appointment_id: appointment_id});
 });
 
 router.get("/my-enroll", async (req, res) => {
@@ -172,5 +172,25 @@ router.get("/my-enroll", async (req, res) => {
 
     return res.status(200).json(user.enrolled);
 });
+
+// router.delete("/delete-course", async (req, res) => {
+//     if (!req.headers.authorization) return res.status(404).json("Invalid token");
+//     const token = req.headers.authorization.slice(0, req.headers.authorization.length / 2);
+
+//     const user = await User.findOne({ _id: token });
+//     if (!user) return res.status(404).json("Invalid token");
+
+//     const course_id = req.query.course_id;
+
+//     const course = await Course.findOne({ course_id: course_id }).populate('creator');
+
+//     if (course.creator.user_id !== user.user_id)
+//         return res.status(403).json("You are not authorize to delete this course");
+
+//     const courseObjectId = course._id;
+
+//     await Course.findOneAndDelete({course_id: course_id})
+
+// });
 
 module.exports = router;
