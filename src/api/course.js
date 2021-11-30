@@ -173,24 +173,43 @@ router.get("/my-enroll", async (req, res) => {
     return res.status(200).json(user.enrolled);
 });
 
-// router.delete("/delete-course", async (req, res) => {
-//     if (!req.headers.authorization) return res.status(404).json("Invalid token");
-//     const token = req.headers.authorization.slice(0, req.headers.authorization.length / 2);
+router.delete("/delete-course", async (req, res) => {
+    if (!req.headers.authorization) return res.status(404).json("Invalid token");
+    const token = req.headers.authorization.slice(0, req.headers.authorization.length / 2);
 
-//     const user = await User.findOne({ _id: token });
-//     if (!user) return res.status(404).json("Invalid token");
+    const user = await User.findOne({ _id: token });
+    if (!user) return res.status(404).json("Invalid token");
 
-//     const course_id = req.query.course_id;
+    const course_id = req.query.course_id;
 
-//     const course = await Course.findOne({ course_id: course_id }).populate('creator');
+    const course = await Course.findOne({ course_id: course_id }).populate('creator');
 
-//     if (course.creator.user_id !== user.user_id)
-//         return res.status(403).json("You are not authorize to delete this course");
+    if (course.creator.user_id !== user.user_id)
+        return res.status(403).json("You are not authorize to delete this course");
 
-//     const courseObjectId = course._id;
+    const courseObjectId = course._id;
 
-//     await Course.findOneAndDelete({course_id: course_id})
+    const enrolledUsers = await User.find({"enrolled.course": courseObjectId}).populate('enrolled.course');
 
-// });
+    for(let i = 0; i < enrolledUsers.length; i++) {
+        for(let j = 0; j < enrolledUsers[i].enrolled.length; j++) {
+            if(enrolledUsers[i].enrolled[j].course._id.toString() === courseObjectId.toString()) {
+                enrolledUsers[i].enrolled.splice(j, 1);
+                j--;
+            }
+        }
+        await enrolledUsers[i].save();
+    }
+
+    await Course.findOneAndDelete({course_id: course_id}).catch((err) => {
+       return res.status(401).json("Unable to delete", err);
+    });
+
+    user.courses.splice(user.courses.indexOf(courseObjectId), 1);
+
+    await user.save();
+
+    return res.status(200).json(enrolledUsers);
+});
 
 module.exports = router;
