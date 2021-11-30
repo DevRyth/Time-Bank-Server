@@ -160,7 +160,9 @@ router.get("/my-enroll", async (req, res) => {
 //     if (course.creator.user_id !== user.user_id)
 //         return res.status(403).json("You are not authorize to delete this course");
 
-//     const 
+//     const courseObjectId = course._id;
+
+//     await Course.findOneAndDelete({course_id: course_id})
 
 // });
 
