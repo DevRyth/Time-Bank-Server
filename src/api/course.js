@@ -139,6 +139,7 @@ router.post("/enroll-course", async (req, res) => {
 
     for (let i = 0; i < course.schedule.length; i++) {
         if (course.schedule[i].appointment.appointment_id == appointment_id) {
+            if(course.schedule[i].isEnrolled == true) return res.status(403).json("Course already enrolled");
             course.schedule[i].isEnrolled = true;
         }
     }
