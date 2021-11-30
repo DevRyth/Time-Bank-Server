@@ -75,6 +75,23 @@ router.get("/all-courses", async (req, res) => {
     })
 });
 
+router.get("/search-course", async (req, res) => {
+    const search_query = req.query.search_query;
+    const offset = req.query.offset ? req.query.offset : 1;
+    const limit = req.query.limit ? req.query.limit : 20;
+
+    await Course.find({"title": {"$regex": search_query, "$options": "i"}}).populate({path: "creator", select: "email username user_id user_info", populate: {
+        path: "user_info",
+        model: "UserInfo",
+    }}).populate("schedule.appointment").then((courses) => {
+        const start = limit * (offset - 1);
+        const end = parseInt(limit * (offset - 1)) + parseInt(limit);
+        return res.status(200).json(courses.slice(start, end));
+    }).catch((err) => {
+        res.status(400).json(err);
+    });
+});
+
 router.get("/creator-course", async (req, res) => {
     const userId = req.query.user_id;
 
@@ -123,7 +140,7 @@ router.post("/enroll-course", async (req, res) => {
     await user.save();
     await course.save();
 
-    res.status(200).json(user.enrolled);
+    res.status(200).json({course: course, appointment_id: appointment_id});
 });
 
 router.get("/my-enroll", async (req, res) => {
@@ -137,13 +154,5 @@ router.get("/my-enroll", async (req, res) => {
 
     return res.status(200).json(user.enrolled);
 });
-
-// router.get("/search-course", async (req, res) => {
-//     const search_query = req.query.search_query;
-//     const offset = req.query.offset ? req.query.offset : 1;
-//     const limit = req.query.limit ? req.query.limit : 20;
-
-//     await Course.findOne({})
-// })
 
 module.exports = router;
