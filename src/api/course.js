@@ -79,6 +79,25 @@ router.get("/all-courses", async (req, res) => {
     })
 });
 
+router.get("/search-course", async (req, res) => {
+    const search_query = req.query.search_query;
+    const offset = req.query.offset ? req.query.offset : 1;
+    const limit = req.query.limit ? req.query.limit : 20;
+
+    await Course.find({ "title": { "$regex": search_query, "$options": "i" } }).populate({
+        path: "creator", select: "email username user_id user_info", populate: {
+            path: "user_info",
+            model: "UserInfo",
+        }
+    }).populate("schedule.appointment").then((courses) => {
+        const start = limit * (offset - 1);
+        const end = parseInt(limit * (offset - 1)) + parseInt(limit);
+        return res.status(200).json(courses.slice(start, end));
+    }).catch((err) => {
+        res.status(400).json(err);
+    });
+});
+
 router.get("/creator-course", async (req, res) => {
     const userId = req.query.user_id;
 
@@ -120,6 +139,7 @@ router.post("/enroll-course", async (req, res) => {
 
     for (let i = 0; i < course.schedule.length; i++) {
         if (course.schedule[i].appointment.appointment_id == appointment_id) {
+            if(course.schedule[i].isEnrolled == true) return res.status(403).json("Course already enrolled");
             course.schedule[i].isEnrolled = true;
         }
     }
@@ -137,9 +157,16 @@ router.get("/my-enroll", async (req, res) => {
     const token = req.headers.authorization.slice(0, req.headers.authorization.length / 2);
 
     const user = await User.findOne({ _id: token }).populate({
-        path: "enrolled.course", populate: {
+        path: "enrolled.course", populate: [{
             path: "schedule.appointment"
-        }
+        }, {
+            path: "creator",
+            select: "email username user_info user_id",
+            populate: {
+                path: "user_info",
+                select: "first_name middle_name last_name"
+            }
+        }]
     });
     if (!user) return res.status(404).json("Invalid token");
 
