@@ -100,4 +100,42 @@ router.get("/course", async (req, res) => {
     });
 });
 
+router.post("/enroll-course", async (req, res) => {
+    if(!req.headers.authorization) return res.status(404).json("Invalid Token");
+    const token = req.headers.authorization.slice(0, req.headers.authorization.length / 2);
+
+    const user = await User.findOne({_id: token});
+    if(!user) return res.status(404).json("Invalid token");
+
+    const course_id = req.body.course_id;
+    const appointment_id = req.body.appointment_id;
+
+    const course = await Course.findOne({course_id: course_id}).populate('schedule.appointment');
+
+    for(let i = 0; i < course.schedule.length; i++) {
+        if(course.schedule[i].appointment.appointment_id == appointment_id) {
+            course.schedule[i].isEnrolled = true;
+        }
+    }
+
+    user.enrolled.push({course: course, appointment_id: appointment_id});
+
+    await user.save();
+    await course.save();
+
+    res.status(200).json(user.enrolled);
+});
+
+router.get("/my-enroll", async (req, res) => {
+    if(!req.headers.authorization) return res.status(404).json("Invalid Token");
+    const token = req.headers.authorization.slice(0,req.headers.authorization.length / 2);
+
+    const user = await User.findOne({_id: token}).populate({path: "enrolled.course", populate: {
+        path: "schedule.appointment"
+    }});
+    if(!user) return res.status(404).json("Invalid token");
+
+    return res.status(200).json(user.enrolled);
+});
+
 module.exports = router;

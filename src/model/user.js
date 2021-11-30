@@ -31,6 +31,17 @@ const UserSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: "Course"
         }
+    ],
+    enrolled: [
+        {
+            course: {
+                type: Schema.Types.ObjectId,
+                ref: "Course"
+            },
+            appointment_id: {
+                type: Number,
+            }
+        }
     ]
 });
 

@@ -36,6 +36,10 @@ const courseSchema = new Schema({
         type: Boolean,
         default: true
       },
+      isEnrolled: {
+        type: Boolean,
+        default: false
+      }
     },
   ],
 });
