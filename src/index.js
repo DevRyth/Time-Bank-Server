@@ -5,7 +5,6 @@ if(process.env.NODE_ENV !== "production") {
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const db_url = require('./constants');
 const authRoutes = require('./api/auth');
 const userRoutes = require('./api/user');
 const courseRoutes = require('./api/course');
@@ -19,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 const Connection = async () => {
+    const db_url = process.env.DB_URL || "mongodb://localhost:27017/time-bank";
     try {
         const connection = await mongoose.connect(db_url, {useNewUrlParser: true, useUnifiedTopology: true});
         autoIncrement.initialize(connection);
