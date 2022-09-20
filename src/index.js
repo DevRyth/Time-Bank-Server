@@ -5,12 +5,12 @@ if (process.env.NODE_ENV !== "production") {
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const authRoutes = require('./api/auth');
-const userRoutes = require('./api/user');
-const courseRoutes = require('./api/course');
-const timebankRoutes = require('./api/timebank');
+const authRoutes = require('./routes/auth.routes');
+const userRoutes = require('./routes/user.routes');
+const courseRoutes = require('./routes/courses.routes');
+const timebankRoutes = require('./routes/timebank.routes');
 const autoIncrement = require('mongoose-auto-increment');
-const Role = require('./model/role');
+const Role = require('./model/role.model');
 const { getRoles } = require('./helper/helper');
 
 const app = express();

@@ -1,10 +1,10 @@
 const express = require('express');
-const User = require('../model/user');
-const TimeBank = require('../model/timebank');
+const User = require('../model/user.model');
+const TimeBank = require('../model/timebank.model');
 
 const router = express.Router();
 
-router.get("/timebank", async (req, res) => {
+const getTimeBankByUser = async (req, res) => {
     const authToken = req.headers.authorization;
     const token = authToken.slice(0, authToken.length / 2);
 
@@ -17,6 +17,6 @@ router.get("/timebank", async (req, res) => {
     });
 
     res.status(200).json(timebank);
-});
+};
 
-module.exports = router;
+module.exports = {getTimeBankByUser};

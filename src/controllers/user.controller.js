@@ -1,10 +1,10 @@
 const express = require('express');
-const User = require('../model/user');
-const UserInfo = require('../model/userInfo');
+const User = require('../model/user.model');
+const UserInfo = require('../model/userInfo.model');
 
 const router = express.Router();
-
-router.post('/register', async (req, res) => {
+ 
+const register = async (req, res) => {
     const userId = req.headers.authorization.slice(0, Math.ceil(req.headers.authorization.length / 2));
     
     const userinfo = req.body.user;
@@ -28,6 +28,6 @@ router.post('/register', async (req, res) => {
     });
 
     // if(savedUserInfo) res.status(200).json({...user, email: existingUser.email, username: existingUser.username});
-});
+};
 
-module.exports = router;
+module.exports = {register};

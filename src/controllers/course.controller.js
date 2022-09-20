@@ -1,11 +1,8 @@
-const express = require("express");
-const Course = require("../model/course");
-const User = require("../model/user");
-const Appointment = require("../model/appointment");
+const Course = require("../model/course.model");
+const User = require("../model/user.model");
+const Appointment = require("../model/appointment.model");
 
-const router = express.Router();
-
-router.post("/course-register", async (req, res) => {
+const courseRegister = async (req, res) => {
 
     const authToken = req.headers.authorization;
     const token = authToken.slice(0, authToken.length / 2);
@@ -46,9 +43,9 @@ router.post("/course-register", async (req, res) => {
             return res.status(200).json({ courses: u.courses, creator_id: u.user_id });
         });
     });
-});
+};
 
-router.get("/my-course", async (req, res) => {
+const getMyCourses = async (req, res) => {
     const authToken = req.headers.authorization;
     const token = authToken.slice(0, authToken.length / 2);
 
@@ -61,9 +58,9 @@ router.get("/my-course", async (req, res) => {
         return res.status(200).json(courses);
     })
 
-});
+};
 
-router.get("/all-courses", async (req, res) => {
+const getAllCourses = async (req, res) => {
     const offset = req.query.offset ? req.query.offset : 1;
     const limit = req.query.limit ? req.query.limit : 20;
 
@@ -77,9 +74,9 @@ router.get("/all-courses", async (req, res) => {
         const end = parseInt(limit * (offset - 1)) + parseInt(limit);
         return res.status(200).json(courses.slice(start, end));
     })
-});
+};
 
-router.get("/search-course", async (req, res) => {
+const searchCourse = async (req, res) => {
     const search_query = req.query.search_query;
     const offset = req.query.offset ? req.query.offset : 1;
     const limit = req.query.limit ? req.query.limit : 20;
@@ -96,9 +93,9 @@ router.get("/search-course", async (req, res) => {
     }).catch((err) => {
         res.status(400).json(err);
     });
-});
+};
 
-router.get("/creator-course", async (req, res) => {
+const getAllCourseByInstructor = async (req, res) => {
     const userId = req.query.user_id;
 
     console.log(userId);
@@ -110,9 +107,9 @@ router.get("/creator-course", async (req, res) => {
     }).catch((err) => {
         return res.status(404).json(err);
     });
-});
+};
 
-router.get("/course", async (req, res) => {
+const getCourseById = async (req, res) => {
     const courseId = req.query.course_id;
 
     await Course.findOne({ course_id: courseId }).populate({
@@ -123,9 +120,9 @@ router.get("/course", async (req, res) => {
     }).populate("schedule.appointment").then((course) => {
         return res.status(200).json(course);
     });
-});
+};
 
-router.post("/enroll-course", async (req, res) => {
+const enrollCourse = async (req, res) => {
     if (!req.headers.authorization) return res.status(404).json("Invalid Token");
     const token = req.headers.authorization.slice(0, req.headers.authorization.length / 2);
 
@@ -139,7 +136,7 @@ router.post("/enroll-course", async (req, res) => {
 
     for (let i = 0; i < course.schedule.length; i++) {
         if (course.schedule[i].appointment.appointment_id == appointment_id) {
-            if(course.schedule[i].isEnrolled == true) return res.status(403).json("Course already enrolled");
+            if (course.schedule[i].isEnrolled == true) return res.status(403).json("Course already enrolled");
             course.schedule[i].isEnrolled = true;
         }
     }
@@ -149,10 +146,10 @@ router.post("/enroll-course", async (req, res) => {
     await user.save();
     await course.save();
 
-    res.status(200).json({course_id: course_id, appointment_id: appointment_id});
-});
+    res.status(200).json({ course_id: course_id, appointment_id: appointment_id });
+};
 
-router.get("/my-enroll", async (req, res) => {
+const getEnrolledCoursesByUser = async (req, res) => {
     if (!req.headers.authorization) return res.status(404).json("Invalid Token");
     const token = req.headers.authorization.slice(0, req.headers.authorization.length / 2);
 
@@ -171,9 +168,9 @@ router.get("/my-enroll", async (req, res) => {
     if (!user) return res.status(404).json("Invalid token");
 
     return res.status(200).json(user.enrolled);
-});
+};
 
-router.delete("/delete-course", async (req, res) => {
+const deleteCourse = async (req, res) => {
     if (!req.headers.authorization) return res.status(404).json("Invalid token");
     const token = req.headers.authorization.slice(0, req.headers.authorization.length / 2);
 
@@ -189,11 +186,11 @@ router.delete("/delete-course", async (req, res) => {
 
     const courseObjectId = course._id;
 
-    const enrolledUsers = await User.find({"enrolled.course": courseObjectId}).populate('enrolled.course');
+    const enrolledUsers = await User.find({ "enrolled.course": courseObjectId }).populate('enrolled.course');
 
-    for(let i = 0; i < enrolledUsers.length; i++) {
-        for(let j = 0; j < enrolledUsers[i].enrolled.length; j++) {
-            if(enrolledUsers[i].enrolled[j].course._id.toString() === courseObjectId.toString()) {
+    for (let i = 0; i < enrolledUsers.length; i++) {
+        for (let j = 0; j < enrolledUsers[i].enrolled.length; j++) {
+            if (enrolledUsers[i].enrolled[j].course._id.toString() === courseObjectId.toString()) {
                 enrolledUsers[i].enrolled.splice(j, 1);
                 j--;
             }
@@ -201,8 +198,8 @@ router.delete("/delete-course", async (req, res) => {
         await enrolledUsers[i].save();
     }
 
-    await Course.findOneAndDelete({course_id: course_id}).catch((err) => {
-       return res.status(401).json("Unable to delete", err);
+    await Course.findOneAndDelete({ course_id: course_id }).catch((err) => {
+        return res.status(401).json("Unable to delete", err);
     });
 
     user.courses.splice(user.courses.indexOf(courseObjectId), 1);
@@ -210,6 +207,6 @@ router.delete("/delete-course", async (req, res) => {
     await user.save();
 
     return res.status(200).json(enrolledUsers);
-});
+};
 
-module.exports = router;
+module.exports = { courseRegister, getMyCourses, getAllCourses, searchCourse, getAllCourseByInstructor, getCourseById, enrollCourse, getEnrolledCoursesByUser, deleteCourse };
