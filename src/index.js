@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 const Connection = async () => {
-    const db_url = process.env.DB_URL || "mongodb://localhost:27017/time-bank";
+    const db_url = process.env.DB_URL;
     try {
         const connection = await mongoose.connect(db_url, {useNewUrlParser: true, useUnifiedTopology: true});
         autoIncrement.initialize(connection);
@@ -39,7 +39,7 @@ app.get('/', (req, res) => {
     res.json({message: "root route"});
 })
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT;
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);
