@@ -2,27 +2,51 @@ const express = require("express");
 const User = require("../model/user");
 const UserInfo = require("../model/userInfo");
 const TimeBank = require("../model/timebank");
+const { getRoles } = require("../helper/helper");
 
-// const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
-router.post("/signup", async (req, res) => {
+const checkRolesExisted = (req, res, next) => {
+  const roles = getRoles();
+  if (req.body.roles) {
+    for (let i = 0; i < req.body.roles.length; i++) {
+      if (!roles.includes(req.body.roles[i])) {
+        return res.status(400).send({ message: `Role ${req.body.roles[i]} does not exist!` });
+      }
+    }
+  }
+
+  next();
+};
+
+router.post("/signup", checkRolesExisted, async (req, res) => {
   const { username, email, password } = req.body;
 
-  const alreadyExistsUser = await User.findOne({email: email}).catch(
+  const alreadyExistUserWithEmail = await User.findOne({ email: email }).catch(
     (err) => {
       console.log("Error: ", err);
     }
   );
 
-  if (alreadyExistsUser) {
+  if (alreadyExistUserWithEmail) {
     return res.status(409).json({ message: "User with email already exists!" });
+  }
+
+  const alreadyExistUserWithUsername = await User.findOne({ username: username }).catch(
+    (err) => {
+      console.log("Error: ", err);
+    }
+  )
+
+  if (alreadyExistUserWithUsername) {
+    return res.status(409).json({ message: "User with username already exists!" });
   }
 
   const tb = new TimeBank();
   const timebank = await tb.save();
-  const time_bank =  timebank._id;
+  const time_bank = timebank._id;
 
   const newUser = new User({ username, email, password, time_bank });
   const savedUser = await newUser.save().catch((err) => {
@@ -30,43 +54,44 @@ router.post("/signup", async (req, res) => {
     res.status(500).json({ error: err });
   });
 
-  const user = await User.findOne({email: email});
+  const jwtToken = jwt.sign({ id: savedUser.id, username: savedUser.username }, process.env.SECRET_TOKEN, { expiresIn: process.env.TOKEN_EXPIRY });
 
-  if (savedUser) res.json({email: email, username: username, token: user.id + user.id});
+  const u = await User.findOne({ username: username }).populate("user_info").populate("time_bank").populate({
+    path: "courses", populate: {
+      path: "schedule.appointment",
+      model: "Appointment"
+    }
+  });
+
+  if (savedUser) res.json({ user: u, token: jwtToken });
 });
 
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
-  const userWithEmail = await User.findOne({email: email}).catch(
+  const userWithUsername = await User.findOne({ username: username }).catch(
     (err) => {
       console.log("Error: ", err);
     }
   );
 
-  if (!userWithEmail)
+  if (!userWithUsername)
     return res
       .status(400)
-      .json({ message: "Email or password does not match!" });
+      .json({ message: "Username or password does not match!" });
 
-  if (userWithEmail.password !== password)
+  if (userWithUsername.password !== password)
     return res
       .status(400)
-      .json({ message: "Email or password does not match!" });
+      .json({ message: "Username or password does not match!" });
 
+  const jwtToken = jwt.sign({ id: userWithUsername.id, username: userWithUsername.username }, process.env.SECRET_TOKEN, { expiresIn: process.env.TOKEN_EXPIRY });
 
-  // const jwtToken = jwt.sign(
-  //   { id: userWithEmail.id, email: userWithEmail.email },
-  //   process.env.JWT_SECRET
-  // );
-
-  // console.log(jwtToken)
-
-  res.json({ user: userWithEmail, token: userWithEmail.id + userWithEmail.id });
+  res.json({ user: userWithUsername, token: jwtToken });
 });
 
-router.get("/me", async (req, res) =>{
-  const token=req.headers.authorization.slice(0, req.headers.authorization.length / 2);
+router.get("/me", async (req, res) => {
+  const token = req.headers.authorization.slice(0, req.headers.authorization.length / 2);
   // const user = await User.findOne({id: token}, async (err, me) => {
   //   if(err) return res.status(404).json("Invalid token!!");
   //   const userInfo = await UserInfo.findOne({userinfo_id: me.user_info}, (err, userInfo) => {
@@ -74,10 +99,12 @@ router.get("/me", async (req, res) =>{
   //     return res.status(200).json({user: me, userInfo: userInfo});
   //   })
   // });
-  const u = await User.findOne({_id:token}).populate("user_info").populate("time_bank").populate({path: "courses", populate: {
-    path: "schedule.appointment",
-    model: "Appointment"
-  }}).then((user) => {
+  const u = await User.findOne({ _id: token }).populate("user_info").populate("time_bank").populate({
+    path: "courses", populate: {
+      path: "schedule.appointment",
+      model: "Appointment"
+    }
+  }).then((user) => {
     return res.status(200).json(user);
   });
 });
