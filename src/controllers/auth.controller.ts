@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
-import { Error } from "mongoose";
+import { Document, Error } from "mongoose";
+import { RoleInterface } from "../schema-interface/role.interface";
+import { UserInterface } from "../schema-interface/user.interface";
 
 const User = require("../model/user.model");
 const Role = require("../model/role.model");
@@ -19,12 +21,12 @@ const signup = async (req: Request, res: Response) => {
   const time_bank = timebank._id;
 
   const newUser = new User({ username, email, password, time_bank });
-  await newUser.save().then(async (user: any) => {
+  await newUser.save().then(async (user: UserInterface) => {
     if (req.body.roles) {
-      await Role.find({ name: { $in: req.body.roles } }).then(async (roles: any) => {
+      await Role.find({ name: { $in: req.body.roles } }).then(async (roles: RoleInterface[]) => {
         // if (err) return res.status(500).send({ message: err });
 
-        user.roles = roles.map((role: any) => role._id);
+        user.roles = roles.map((role: RoleInterface) => role._id);
         await user.save().then().catch((err: Error) => {
           return res.status(401).json({ message: "Cannot save user" });
         });
@@ -81,7 +83,7 @@ const me = async (req: Request, res: Response) => {
       path: "schedule.appointment",
       model: "Appointment"
     }
-  }).then((user: any) => {
+  }).then((user: UserInterface) => {
     return res.status(200).json(user);
   });
 };
