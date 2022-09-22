@@ -1,5 +1,7 @@
 const User = require("../model/user.model");
-const {getRoles} = require("../helper/helper");
+const jwt = require("jsonwebtoken");
+
+const { getRoles } = require("../helper/helper");
 
 const checkIfUserExists = async (req, res, next) => {
 
@@ -43,4 +45,19 @@ const checkRolesExists = (req, res, next) => {
 };
 
 
-module.exports = { checkIfUserExists, checkRolesExists };
+const verifyToken = (req, res, next) => {
+    const token = req.headers.authorization;
+    if (!token) return res.status(404).json({ message: "Authentication token not available!!" });
+
+    jwt.verify(token, process.env.SECRET_TOKEN, (err, decoded) => {
+        if (err) {
+            return res.status(401).send({ message: "Unauthorized!" });
+        }
+
+        req.user_id = decoded.id;
+        next();
+    });
+}
+
+
+module.exports = { checkIfUserExists, checkRolesExists, verifyToken };
