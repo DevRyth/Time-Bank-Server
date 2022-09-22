@@ -1,5 +1,5 @@
 
-function validation(st){
+const validation = (st) => {
 if(st.length!=5)
 return false;
 
@@ -14,4 +14,8 @@ return false;
 }
 // validation(st);
 
-export {validation};
+const getRoles = () => {
+    return process.env.ROLES.split(" ");
+}
+
+module.exports = {validation, getRoles};

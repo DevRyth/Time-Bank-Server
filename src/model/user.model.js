@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const autoIncrement = require('mongoose-auto-increment');
-const passportLocalMongoose = require('passport-local-mongoose');
 
 const UserSchema = new Schema({
     email: {
@@ -18,6 +17,12 @@ const UserSchema = new Schema({
         type: String,
         required: true,
     },
+    roles: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Role"
+        }
+    ],
     user_info: {
         type: Schema.Types.ObjectId,
         ref: "UserInfo"
@@ -45,14 +50,12 @@ const UserSchema = new Schema({
     ]
 });
 
-UserSchema.plugin(passportLocalMongoose);
-
 autoIncrement.initialize(mongoose.connection);
 UserSchema.plugin(autoIncrement.plugin, {
-  model: 'User',
-  field: 'user_id',
-  startAt: 1,
-  incrementBy: 1
+    model: 'User',
+    field: 'user_id',
+    startAt: 1,
+    incrementBy: 1
 });
 
 module.exports = mongoose.model('User', UserSchema);
