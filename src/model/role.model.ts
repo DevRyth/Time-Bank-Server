@@ -3,11 +3,11 @@ const Schema = mongoose.Schema;
 const autoIncrement = require('mongoose-auto-increment');
 
 const RoleSchema = new Schema({
-    name: {
-        type: String,
-        required: true,
-        unique: true
-    }
+  name: {
+    type: String,
+    required: true,
+    unique: true
+  }
 });
 
 autoIncrement.initialize(mongoose.connection);
@@ -17,6 +17,8 @@ RoleSchema.plugin(autoIncrement.plugin, {
   startAt: 1,
   incrementBy: 1
 });
+
+export { }
 
 module.exports = mongoose.model('Role', RoleSchema);
 

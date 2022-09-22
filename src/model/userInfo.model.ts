@@ -54,10 +54,12 @@ const UserInfoSchema = new Schema({
 
 autoIncrement.initialize(mongoose.connection);
 UserInfoSchema.plugin(autoIncrement.plugin, {
-  model: 'UserInfo',
-  field: 'userinfo_id',
-  startAt: 1,
-  incrementBy: 1
+    model: 'UserInfo',
+    field: 'userinfo_id',
+    startAt: 1,
+    incrementBy: 1
 });
+
+export { }
 
 module.exports = mongoose.model('UserInfo', UserInfoSchema);

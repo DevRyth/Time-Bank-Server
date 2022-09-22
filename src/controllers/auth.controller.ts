@@ -1,3 +1,6 @@
+import { Request, Response } from "express";
+import { Error } from "mongoose";
+
 const User = require("../model/user.model");
 const Role = require("../model/role.model");
 const TimeBank = require("../model/timebank.model");
@@ -7,7 +10,7 @@ const { getRoles } = require("../helper/helper");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-const signup = async (req, res) => {
+const signup = async (req: Request, res: Response) => {
   const { username, email } = req.body;
   const password = bcrypt.hashSync(req.body.password, 10);
 
@@ -16,20 +19,20 @@ const signup = async (req, res) => {
   const time_bank = timebank._id;
 
   const newUser = new User({ username, email, password, time_bank });
-  await newUser.save().then(async (user) => {
+  await newUser.save().then(async (user: any) => {
     if (req.body.roles) {
-      await Role.find({ name: { $in: req.body.roles } }).then(async (roles) => {
+      await Role.find({ name: { $in: req.body.roles } }).then(async (roles: any) => {
         // if (err) return res.status(500).send({ message: err });
 
-        user.roles = roles.map(role => role._id);
-        await user.save().then().catch((err) => {
+        user.roles = roles.map((role: any) => role._id);
+        await user.save().then().catch((err: Error) => {
           return res.status(401).json({ message: "Cannot save user" });
         });
-      }).catch(err => {
+      }).catch((err: Error) => {
         console.log("Error ", err);
       });
     } else return res.status(401).json({ message: "Roles not defined!!" });
-  }).catch((err) => {
+  }).catch((err: Error) => {
     if (err) {
       console.log("Error: ", err);
       return res.status(500).json({ error: err });
@@ -49,11 +52,11 @@ const signup = async (req, res) => {
   return res.status(401).json({ message: "Cannot save user" });
 };
 
-const login = async (req, res) => {
+const login = async (req: Request, res: Response) => {
   const { username, password } = req.body;
 
   const userWithUsername = await User.findOne({ username: username }).populate("roles", "-__v").catch(
-    (err) => {
+    (err: Error) => {
       console.log("Error: ", err);
     }
   );
@@ -72,16 +75,17 @@ const login = async (req, res) => {
   res.json({ user: userWithUsername, token: jwtToken });
 };
 
-const me = async (req, res) => {
+const me = async (req: Request, res: Response) => {
   await User.findOne({ _id: req.user_id }).populate("user_info").populate("time_bank").populate({
     path: "courses", populate: {
       path: "schedule.appointment",
       model: "Appointment"
     }
-  }).then((user) => {
+  }).then((user: any) => {
     return res.status(200).json(user);
   });
 };
 
+export { }
 
 module.exports = { signup, login, me };

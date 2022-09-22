@@ -6,4 +6,6 @@ const router = express.Router();
 
 router.get("/timebank", getTimeBankByUser);
 
+export { };
+
 module.exports = router;

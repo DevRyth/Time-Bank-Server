@@ -1,14 +1,17 @@
+import { NextFunction, Request, Response } from "express";
+import { Error } from "mongoose";
+
 const User = require("../model/user.model");
 const jwt = require("jsonwebtoken");
 
 const { getRoles } = require("../helper/helper");
 
-const checkIfUserExists = async (req, res, next) => {
+const checkIfUserExists = async (req: Request, res: Response, next: NextFunction) => {
 
     const { username, email } = req.body;
 
     const alreadyExistUserWithEmail = await User.findOne({ email: email }).catch(
-        (err) => {
+        (err: Error) => {
             console.log("Error: ", err);
         }
     );
@@ -18,7 +21,7 @@ const checkIfUserExists = async (req, res, next) => {
     }
 
     const alreadyExistUserWithUsername = await User.findOne({ username: username }).catch(
-        (err) => {
+        (err: Error) => {
             console.log("Error: ", err);
         }
     )
@@ -30,7 +33,7 @@ const checkIfUserExists = async (req, res, next) => {
     next();
 }
 
-const checkRolesExists = (req, res, next) => {
+const checkRolesExists = (req: Request, res: Response, next: NextFunction) => {
     const roles = getRoles();
 
     if (req.body.roles) {
@@ -45,11 +48,11 @@ const checkRolesExists = (req, res, next) => {
 };
 
 
-const verifyToken = (req, res, next) => {
+const verifyToken = (req: Request, res:Response, next: NextFunction) => {
     const token = req.headers.authorization;
     if (!token) return res.status(404).json({ message: "Authentication token not available!!" });
 
-    jwt.verify(token, process.env.SECRET_TOKEN, (err, decoded) => {
+    jwt.verify(token, process.env.SECRET_TOKEN, (err: any, decoded: any) => {
         if (err) {
             return res.status(401).send({ message: "Unauthorized!" });
         }
