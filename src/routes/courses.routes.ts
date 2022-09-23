@@ -14,4 +14,6 @@ router.post("/enroll-course", enrollCourse);
 router.get("/my-enroll", getEnrolledCoursesByUser);
 router.delete("/delete-course", deleteCourse);
 
+export { };
+
 module.exports = router;

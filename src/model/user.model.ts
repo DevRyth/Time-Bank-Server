@@ -58,5 +58,7 @@ UserSchema.plugin(autoIncrement.plugin, {
     incrementBy: 1
 });
 
+export { }
+
 module.exports = mongoose.model('User', UserSchema);
 

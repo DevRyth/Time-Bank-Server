@@ -21,10 +21,11 @@ const TimeBankSchema = new Schema({
 
 autoIncrement.initialize(mongoose.connection);
 TimeBankSchema.plugin(autoIncrement.plugin, {
-  model: 'TimeBank',
-  field: 'timebank_id',
-  startAt: 1,
-  incrementBy: 1
+    model: 'TimeBank',
+    field: 'timebank_id',
+    startAt: 1,
+    incrementBy: 1
 });
 
+export { }
 module.exports = mongoose.model('TimeBank', TimeBankSchema);
