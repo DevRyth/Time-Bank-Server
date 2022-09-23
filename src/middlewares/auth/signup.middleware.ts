@@ -1,12 +1,27 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response, NextFunction } from 'express';
+import { signupSchemaValidator } from "../../schema-validator/auth.validator";
 import { Error } from "mongoose";
+import { getRoles } from '../../helper/helper';
 
-const User = require("../model/user.model");
-const jwt = require("jsonwebtoken");
 
-const { getRoles } = require("../helper/helper");
+const User = require("../../model/user.model");
 
-const checkIfUserExists = async (req: Request, res: Response, next: NextFunction) => {
+var Validator = require('jsonschema').Validator;
+var v = new Validator();
+
+
+export const validateSignupSchema = (req: Request, res: Response, next: NextFunction) => {
+    try {
+        v.validate(req.body, signupSchemaValidator, { throwError: true });
+        req.body.username = req.body.username.toLowerCase();
+        req.body.email = req.body.email.toLowerCase();
+        next();
+    } catch (err: any) {
+        return res.status(401).json({ message: err.property + " " + err.message });
+    }
+}
+
+export const checkIfUserExists = async (req: Request, res: Response, next: NextFunction) => {
 
     const { username, email } = req.body;
 
@@ -33,7 +48,7 @@ const checkIfUserExists = async (req: Request, res: Response, next: NextFunction
     next();
 }
 
-const checkRolesExists = (req: Request, res: Response, next: NextFunction) => {
+export const checkRolesExists = (req: Request, res: Response, next: NextFunction) => {
     const roles = getRoles();
 
     if (req.body.roles) {
@@ -46,21 +61,3 @@ const checkRolesExists = (req: Request, res: Response, next: NextFunction) => {
 
     next();
 };
-
-
-const verifyToken = (req: Request, res:Response, next: NextFunction) => {
-    const token = req.headers.authorization;
-    if (!token) return res.status(404).json({ message: "Authentication token not available!!" });
-
-    jwt.verify(token, process.env.SECRET_TOKEN, (err: any, decoded: any) => {
-        if (err) {
-            return res.status(401).send({ message: "Unauthorized!" });
-        }
-
-        req.user_id = decoded.id;
-        next();
-    });
-}
-
-
-module.exports = { checkIfUserExists, checkRolesExists, verifyToken };

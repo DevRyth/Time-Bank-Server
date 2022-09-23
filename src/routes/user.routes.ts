@@ -1,7 +1,7 @@
-const express = require('express');
+import { register } from "../controllers/user.controller";
+import { verifyToken } from "../middlewares/auth/auth.middleware";
 
-const { register } = require("../controllers/user.controller");
-const { verifyToken } = require("../middlewares/auth.middleware");
+const express = require('express');
 
 const router = express.Router();
 

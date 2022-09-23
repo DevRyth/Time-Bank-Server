@@ -6,7 +6,7 @@ import { UserInfoInterface } from "../schema-interface/userinfo.interface";
 const User = require('../model/user.model');
 const UserInfo = require('../model/userInfo.model');
 
-const register = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response) => {
 
     const userinfo = req.body;
 
@@ -28,5 +28,3 @@ const register = async (req: Request, res: Response) => {
     });
 
 };
-
-module.exports = { register };

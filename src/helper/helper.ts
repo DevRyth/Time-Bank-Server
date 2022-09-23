@@ -1,5 +1,4 @@
-
-const validation = (st: string) => {
+export const validation = (st: string) => {
     if (st.length != 5)
         return false;
 
@@ -14,8 +13,6 @@ const validation = (st: string) => {
 }
 // validation(st);
 
-const getRoles = () => {
+export const getRoles = () => {
     return process.env.ROLES!.split(" ");
 }
-
-module.exports = { validation, getRoles };

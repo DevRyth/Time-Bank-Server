@@ -1,12 +1,15 @@
+import { login, me, signup } from "../controllers/auth.controller";
+import { verifyToken } from "../middlewares/auth/auth.middleware";
+import { validateLoginSchema } from "../middlewares/auth/login.middleware";
+import { checkIfUserExists, checkRolesExists, validateSignupSchema } from "../middlewares/auth/signup.middleware";
+
 const express = require("express");
 
-const { checkIfUserExists, checkRolesExists, verifyToken } = require('../middlewares/auth.middleware');
-const { signup, login, me } = require('../controllers/auth.controller');
 
 const router = express.Router();
 
-router.post("/signup", checkIfUserExists, checkRolesExists, signup);
-router.post("/login", login);
+router.post("/signup", validateSignupSchema, checkIfUserExists, checkRolesExists, signup);
+router.post("/login", validateLoginSchema, login);
 router.get("/me", verifyToken, me);
 
 

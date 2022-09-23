@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import mongoose, { ConnectOptions, Error } from "mongoose";
 import cors from 'cors';
+import { getRoles } from "./helper/helper";
 
 if (process.env.NODE_ENV !== "production") {
     require('dotenv').config();
@@ -12,7 +13,6 @@ const courseRoutes = require('./routes/courses.routes');
 const timebankRoutes = require('./routes/timebank.routes');
 const autoIncrement = require('mongoose-auto-increment');
 const Role = require('./model/role.model');
-const { getRoles } = require('./helper/helper');
 
 const app = express();
 app.use(cors());
