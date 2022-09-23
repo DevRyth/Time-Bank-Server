@@ -7,12 +7,11 @@ const User = require("../model/user.model");
 const Role = require("../model/role.model");
 const TimeBank = require("../model/timebank.model");
 
-const { getRoles } = require("../helper/helper");
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-const signup = async (req: Request, res: Response) => {
+export const signup = async (req: Request, res: Response) => {
   const { username, email } = req.body;
   const password = bcrypt.hashSync(req.body.password, 10);
 
@@ -54,7 +53,7 @@ const signup = async (req: Request, res: Response) => {
   return res.status(401).json({ message: "Cannot save user" });
 };
 
-const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response) => {
   const { username, password } = req.body;
 
   const userWithUsername = await User.findOne({ username: username }).populate("roles", "-__v").catch(
@@ -77,7 +76,7 @@ const login = async (req: Request, res: Response) => {
   res.json({ user: userWithUsername, token: jwtToken });
 };
 
-const me = async (req: Request, res: Response) => {
+export const me = async (req: Request, res: Response) => {
   await User.findOne({ _id: req.user_id }).populate("user_info").populate("time_bank").populate({
     path: "courses", populate: {
       path: "schedule.appointment",
@@ -89,5 +88,3 @@ const me = async (req: Request, res: Response) => {
 };
 
 export { }
-
-module.exports = { signup, login, me };
